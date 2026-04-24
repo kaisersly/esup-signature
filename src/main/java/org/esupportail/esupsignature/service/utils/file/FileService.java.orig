@@ -387,12 +387,12 @@ public class FileService {
 		if(!print) {
 			fixFactor = 1f;
 		}
-		BufferedImage bufferedImage = new BufferedImage(Math.round(500 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(Math.round(600 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics2D = bufferedImage.createGraphics();
 		graphics2D.setColor(new Color(0f,0f,0f,0f ));
 		Rectangle rect = new Rectangle();
 		rect.setRect(0, 0, 600 / fixFactor, 300 / fixFactor);
-		graphics2D.fillRect(0, 0, Math.round(500 / fixFactor), Math.round(300 / fixFactor));
+		graphics2D.fillRect(0, 0, Math.round(600 / fixFactor), Math.round(300 / fixFactor));
 		setQualityParams(graphics2D);
 		String word;
 		if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
@@ -409,7 +409,7 @@ public class FileService {
 			int fontSize;
 			if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
 				font = Font.createFont(Font.TRUETYPE_FONT, new ClassPathResource("/static/fonts/Signature.ttf").getInputStream()).deriveFont(Font.BOLD);
-				fontSize = findFontSize(word, Math.round(500 / fixFactor), font);
+				fontSize = findFontSize(word, Math.round(250 / fixFactor), font);
 			} else {
 				font = Font.createFont(Font.TRUETYPE_FONT, new ClassPathResource("/static/fonts/LiberationSans-Regular.ttf").getInputStream()).deriveFont(Font.BOLD);
 				fontSize = findFontSize(email, Math.round(500 / fixFactor), font);
@@ -421,8 +421,8 @@ public class FileService {
 			int y = rect.y + ((rect.height - fm.getHeight()) / 2) + fm.getAscent();
 			int lineHeight = Math.round((float) fontSize / 1.5f);
 			if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
-				graphics2D.drawString(StringUtils.capitalize(firstname), 50 / fixFactor, y - lineHeight);
-				graphics2D.drawString(StringUtils.capitalize(name), 50 / fixFactor, y + lineHeight);
+				graphics2D.drawString(StringUtils.capitalize(firstname), 250 / fixFactor, y - lineHeight);
+				graphics2D.drawString(StringUtils.capitalize(name), 250 / fixFactor, y + lineHeight);
 			} else {
 				graphics2D.drawString(email, 10 / fixFactor, y - lineHeight);
 			}
@@ -441,12 +441,12 @@ public class FileService {
 		if(!print) {
 			fixFactor = 1f;
 		}
-		BufferedImage bufferedImage = new BufferedImage(Math.round(500 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(Math.round(600 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics2D = bufferedImage.createGraphics();
 		graphics2D.setColor(new Color(0f,0f,0f,0f ));
 		Rectangle rect = new Rectangle();
 		rect.setRect(0, 0, 600 / fixFactor, 300 / fixFactor);
-		graphics2D.fillRect(0, 0, Math.round(500 / fixFactor), Math.round(300 / fixFactor));
+		graphics2D.fillRect(0, 0, Math.round(600 / fixFactor), Math.round(300 / fixFactor));
 		setQualityParams(graphics2D);
 		String word = email;
 		if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
