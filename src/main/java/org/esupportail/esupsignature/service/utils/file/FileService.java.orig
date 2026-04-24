@@ -201,18 +201,10 @@ public class FileService {
 			BufferedImage tempImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D tempGraphics = tempImage.createGraphics();
 			int tempFontSize = (int) (globalProperties.getDefaultFontSize() * qualityFactor * signRequestParams.getSignScale() * globalProperties.getFixFactor());
-			float lineHeightFactor = globalProperties.getSignatureExtraLineHeightFactor();
-			int textFirstLineHeight = tempFontSize;
-			int textLineAdvance = Math.round(tempFontSize * lineHeightFactor);
-			int textAscent = tempFontSize;
-			int textVerticalPadding = Math.round(4 * signRequestParams.getSignScale() * qualityFactor * globalProperties.getFixFactor());
 			try {
 				Font tempFont = Font.createFont(Font.TRUETYPE_FONT, new ClassPathResource("/static/fonts/LiberationSans-Regular.ttf").getInputStream()).deriveFont(Font.PLAIN).deriveFont((float) tempFontSize);
 				tempGraphics.setFont(tempFont);
 				FontMetrics tempFm = tempGraphics.getFontMetrics();
-				textFirstLineHeight = tempFm.getHeight();
-				textLineAdvance = Math.round(tempFontSize * lineHeightFactor);
-				textAscent = tempFm.getAscent();
 				int maxWidth = (int) ((200 + extraWidth) * signRequestParams.getSignScale() * qualityFactor * globalProperties.getFixFactor());
 				if(signRequestParams.getExtraType()) {
 					String typeSign = "Signature";
@@ -220,25 +212,21 @@ public class FileService {
 					if(otp!= null && otp) {
 						typeSign = user.getPhone() != null ? "Signature OTP : " + user.getPhone() : "Signature OTP";
 					}
-					List<String> typeLines = wrapText(typeSign, tempFm, maxWidth);
-					allWrappedLines.add(typeLines);
+					allWrappedLines.add(wrapText(typeSign, tempFm, maxWidth));
 				}
 				if(signRequestParams.getExtraName()) {
 					String fullName = user.getFirstname() + " " + user.getName();
-					List<String> nameLines = wrapText(fullName, tempFm, maxWidth);
-					allWrappedLines.add(nameLines);
+					allWrappedLines.add(wrapText(fullName, tempFm, maxWidth));
 				}
 				if(signRequestParams.getExtraDate()) {
 					DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss XXX", Locale.FRENCH);
 					String dateStr = "le " + dateFormat.format(date);
-					List<String> dateLines = wrapText(dateStr, tempFm, maxWidth);
-					allWrappedLines.add(dateLines);
+					allWrappedLines.add(wrapText(dateStr, tempFm, maxWidth));
 				}
 				if(StringUtils.hasText(signRequestParams.getExtraText())) {
 					List<String> textLines = List.of(signRequestParams.getExtraText().split("\\s*\n\\s*"));
 					for (String line : textLines) {
-						List<String> wrappedTextLines = wrapText(line, tempFm, maxWidth);
-						allWrappedLines.add(wrappedTextLines);
+						allWrappedLines.add(wrapText(line, tempFm, maxWidth));
 					}
 				}
 			} catch (FontFormatException e) {
@@ -247,10 +235,9 @@ public class FileService {
 				tempGraphics.dispose();
 				tempImage.flush();
 			}
-			int nbExtra = allWrappedLines.stream().mapToInt(List::size).sum();
+			float nbExtra = allWrappedLines.stream().mapToInt(List::size).sum() + 1.5f;
 			if (signRequestParams.getExtraOnTop()) {
-				int textHeight = nbExtra == 0 ? 0 : textFirstLineHeight + textLineAdvance * (nbExtra - 1);
-				extraHeight = Math.round((float) (textHeight + textVerticalPadding) / qualityFactor / globalProperties.getFixFactor() / signRequestParams.getSignScale());
+				extraHeight = Math.round(signRequestParams.getFontSize() * nbExtra);
 			}
 			int widthOffset = (int) (extraWidth * signRequestParams.getSignScale() * qualityFactor * globalProperties.getFixFactor());
 			int heightOffset = (int) (extraHeight  * signRequestParams.getSignScale() * qualityFactor * globalProperties.getFixFactor());
@@ -276,10 +263,15 @@ public class FileService {
 				font = font.deriveFont(attributes);
 				graphics2D.setFont(font);
 				graphics2D.setPaint(Color.black);
-				int textBaseline = Math.round((float) textVerticalPadding / 2) + textAscent;
+				FontMetrics fm = graphics2D.getFontMetrics();
+				int lineHeight = Math.round(fontSize * 1.5f);
 				for (List<String> wrappedLines : allWrappedLines) {
 					for (String wrappedLine : wrappedLines) {
-						graphics2D.drawString(new String(wrappedLine.getBytes(), StandardCharsets.UTF_8), widthOffset, textBaseline + textLineAdvance * lineCount);
+						if (lineCount == 0) {
+							graphics2D.drawString(new String(wrappedLine.getBytes(), StandardCharsets.UTF_8), widthOffset, fm.getHeight());
+						} else {
+							graphics2D.drawString(new String(wrappedLine.getBytes(), StandardCharsets.UTF_8), widthOffset, fm.getHeight() + lineHeight * lineCount);
+						}
 						lineCount++;
 					}
 				}
@@ -395,12 +387,12 @@ public class FileService {
 		if(!print) {
 			fixFactor = 1f;
 		}
-		BufferedImage bufferedImage = new BufferedImage(Math.round(500 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(Math.round(600 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics2D = bufferedImage.createGraphics();
 		graphics2D.setColor(new Color(0f,0f,0f,0f ));
 		Rectangle rect = new Rectangle();
 		rect.setRect(0, 0, 600 / fixFactor, 300 / fixFactor);
-		graphics2D.fillRect(0, 0, Math.round(500 / fixFactor), Math.round(300 / fixFactor));
+		graphics2D.fillRect(0, 0, Math.round(600 / fixFactor), Math.round(300 / fixFactor));
 		setQualityParams(graphics2D);
 		String word;
 		if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
@@ -417,7 +409,7 @@ public class FileService {
 			int fontSize;
 			if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
 				font = Font.createFont(Font.TRUETYPE_FONT, new ClassPathResource("/static/fonts/Signature.ttf").getInputStream()).deriveFont(Font.BOLD);
-				fontSize = findFontSize(word, Math.round(500 / fixFactor), font);
+				fontSize = findFontSize(word, Math.round(250 / fixFactor), font);
 			} else {
 				font = Font.createFont(Font.TRUETYPE_FONT, new ClassPathResource("/static/fonts/LiberationSans-Regular.ttf").getInputStream()).deriveFont(Font.BOLD);
 				fontSize = findFontSize(email, Math.round(500 / fixFactor), font);
@@ -429,8 +421,8 @@ public class FileService {
 			int y = rect.y + ((rect.height - fm.getHeight()) / 2) + fm.getAscent();
 			int lineHeight = Math.round((float) fontSize / 1.5f);
 			if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
-				graphics2D.drawString(StringUtils.capitalize(firstname), 50 / fixFactor, y - lineHeight);
-				graphics2D.drawString(StringUtils.capitalize(name), 50 / fixFactor, y + lineHeight);
+				graphics2D.drawString(StringUtils.capitalize(firstname), 250 / fixFactor, y - lineHeight);
+				graphics2D.drawString(StringUtils.capitalize(name), 250 / fixFactor, y + lineHeight);
 			} else {
 				graphics2D.drawString(email, 10 / fixFactor, y - lineHeight);
 			}
@@ -449,12 +441,12 @@ public class FileService {
 		if(!print) {
 			fixFactor = 1f;
 		}
-		BufferedImage bufferedImage = new BufferedImage(Math.round(500 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(Math.round(600 / fixFactor), Math.round(300 / fixFactor), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics2D = bufferedImage.createGraphics();
 		graphics2D.setColor(new Color(0f,0f,0f,0f ));
 		Rectangle rect = new Rectangle();
 		rect.setRect(0, 0, 600 / fixFactor, 300 / fixFactor);
-		graphics2D.fillRect(0, 0, Math.round(500 / fixFactor), Math.round(300 / fixFactor));
+		graphics2D.fillRect(0, 0, Math.round(600 / fixFactor), Math.round(300 / fixFactor));
 		setQualityParams(graphics2D);
 		String word = email;
 		if(StringUtils.hasText(firstname) && StringUtils.hasText(name)) {
