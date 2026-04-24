@@ -218,11 +218,16 @@ public class OtpService {
     public void cleanEndedOtp(){
         List<Otp> toCleanOtps = otpRepository.findBySignBookDeleted(true);
         toCleanOtps.addAll(otpRepository.findBySignBookStatus(SignRequestStatus.refused));
-        toCleanOtps.addAll(otpRepository.findBySignBookStatus(SignRequestStatus.exported));
         List<Otp> completedOtps = otpRepository.findBySignBookStatus(SignRequestStatus.completed);
         for(Otp completedOtp : completedOtps) {
             if(completedOtp.getSignBook().getEndDate() != null && completedOtp.getSignBook().getEndDate().before(new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000))) {
                 toCleanOtps.add(completedOtp);
+            }
+        }
+        List<Otp> exportedOtps = otpRepository.findBySignBookStatus(SignRequestStatus.exported);
+        for(Otp exportedOtp : exportedOtps) {
+            if(exportedOtp.getCreateDate().before(new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000))) {
+                toCleanOtps.add(exportedOtp);
             }
         }
         logger.info(toCleanOtps.size() + " otps to clean");
