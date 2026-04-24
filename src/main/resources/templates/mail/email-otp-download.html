@@ -40,8 +40,11 @@
 						</td>
 					</tr>
 				</table>
-				<br>
-				<p style="margin-bottom:1rem; margin-top:0;"><b>Vous pouvez télécharger le document final depuis le bouton ci-dessous</b>. Ce lien de téléchargement est valable jusqu’au <span style="font-weight: bold" th:text="${#dates.format(otpValidity, 'dd/MM/yyyy HH:mm')}"></span>. S’il a déjà expiré, un nouveau lien vous sera transmis à cette même adresse</p>
+            <br>
+            <p style="margin-bottom:1rem; margin-top:0">
+                <span style="font-size: 1.2em"><strong><em>Merci de vérifier que votre signature est bien <u style="color: red">placée dans la rubrique</u> comportant votre nom</em></strong></span>
+            </p>
+            <p style="margin-bottom:1rem; margin-top:0;"><b>Vous pouvez télécharger le document final depuis le bouton ci-dessous</b>. Ce lien de téléchargement est valable jusqu’au <span style="font-weight: bold" th:text="${#dates.format(otpValidity, 'dd/MM/yyyy HH:mm')}"></span>. S’il a déjà expiré, un nouveau lien vous sera transmis à cette même adresse</p>
 				<p style="margin-bottom:1rem; margin-top:0;width: 100%;text-align: center;">
 					<a th:href="${url}" style="background-color:#0d6efd; color:#fff; text-decoration:none; -moz-user-select:none; -ms-user-select:none; -webkit-user-select:none; border-radius: 20px; display:inline-block; font-size:14px; font-weight:600; line-height:1.5; padding:15px; text-align:center; transition:color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; user-select:none; vertical-align:middle; margin-right:auto; margin-left:auto;	" bgcolor="#0d6efd" align="center" valign="middle">Accéder au document</a>
 				</p>
