@@ -36,6 +36,9 @@
                 <div class="d-flex justify-content-start align-items-center gap-2">
                     <h5 class="ms-4">Statut</h5><div th:insert="~{user/signbooks/includes/status :: status(signBookLight=${signBookLight})}" class="mb-1"></div>
                 </div>
+                <div class="d-flex justify-content-start align-items-center gap-2">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href = window.location.href.replace('/admin/', '/user/');">Voir dans l'espace superviseur</button>
+                </div>
             </div>
             <div class="card border mb-2">
                 <div class="card-header">
